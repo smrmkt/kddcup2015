@@ -4,8 +4,6 @@
 ## data directory
 */data/
 
-
-
 # R
 ## History files
 */.Rhistory
@@ -14,6 +12,7 @@
 *-Ex.R
 ## RStudio files
 */.Rproj.user/
+*/.RData
 
 # python
 ## pyc file
