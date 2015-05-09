@@ -1,28 +1,21 @@
 # project
 ## idea
 **.idea/
+## data directory
+*/data/
+
 
 
 # R
 ## History files
-.Rhistory
-.Rapp.history
-
+*/.Rhistory
+*/.Rapp.history
 ## Example code in package build process
 *-Ex.R
-
 ## RStudio files
-.Rproj.user/
-
-## produced vignettes
-vignettes/*.html
-vignettes/*.pdf
-.Rproj.user
-
+*/.Rproj.user/
 
 # python
 ## pyc file
 **.pyc
 
-# data directory
-python/data/
