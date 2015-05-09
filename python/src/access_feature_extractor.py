@@ -11,7 +11,8 @@ base_dir = os.path.dirname(__file__)
 
 
 class AccessFeatureExtractor():
-    _log_csv_path = '{0}/../data/log_train_mini.csv'.format(base_dir)
+    _log_csv_path = '{0}/../data/train/log_train.csv'.format(base_dir)
+    _feature_path = '{0}/../data/feature/feature.csv'.format(base_dir)
 
     def __init__(self):
         log_csv = open(self._log_csv_path, 'r')
@@ -21,15 +22,29 @@ class AccessFeatureExtractor():
 
     def extract(self):
         access_iter = self.extract_access_features(self._bag_iter)
+        self._save_to_file(access_iter)
+
+    def _save_to_file(self, iter):
+        with open(self._feature_path, 'w') as feature_file:
+            header_written = False
+            for bag in iter:
+                if header_written is not True:
+                    feature_file.write('enrollment_id,{0}\n'.format(
+                        ','.join(bag.feature_keys)
+                    ))
+                    header_written = True
+                feature_file.write('{0},{1}\n'.format(
+                    str(bag.enrollment_id),
+                    ','.join([str(v)for v in bag.feature_values])
+                ))
 
     def extract_access_features(self, iter):
         for bag in iter:
-            b = bag.extract_access_count()\
+            yield bag.extract_access_count()\
                 .extract_access_days()\
                 .extract_access_hours()\
                 .extract_source_count()\
                 .extract_event_count()
-            print b.feature_keys, b.feature_values
 
     def _tuple_generator(self, iter):
         for line in iter:
