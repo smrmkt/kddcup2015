@@ -14,8 +14,10 @@ from access_feature_extractor import AccessFeatureExtractor
 
 # args
 parser = argparse.ArgumentParser()
+parser.add_argument('data_type', type=str, choices=['train', 'test'])
 
 
 if __name__ == '__main__':
-    extractor = AccessFeatureExtractor()
+    data_type = parser.parse_args().data_type
+    extractor = AccessFeatureExtractor(data_type)
     extractor.extract()

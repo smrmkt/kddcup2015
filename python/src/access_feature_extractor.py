@@ -11,18 +11,18 @@ base_dir = os.path.dirname(__file__)
 
 
 class AccessFeatureExtractor():
-    _log_csv_path = '{0}/../data/train/log_train.csv'.format(base_dir)
-    _feature_path = '{0}/../data/feature/feature.csv'.format(base_dir)
-
-    def __init__(self):
-        log_csv = open(self._log_csv_path, 'r')
-        tuple_iter = self._tuple_generator(log_csv)
+    def __init__(self, data_type):
+        self._log_csv_path = '{0}/../data/{1}/log_{1}.csv'.format(base_dir, data_type)
+        self._feature_path = '{0}/../data/feature/feature_{1}.csv'.format(base_dir, data_type)
+        self._log_csv = open(self._log_csv_path, 'r')
+        tuple_iter = self._tuple_generator(self._log_csv)
         grouped_iter = itertools.groupby(tuple_iter, lambda x: x[0])
         self._bag_iter = self._bag_generator(grouped_iter)
 
     def extract(self):
         access_iter = self.extract_access_features(self._bag_iter)
         self._save_to_file(access_iter)
+        self._log_csv.close()
 
     def _save_to_file(self, iter):
         with open(self._feature_path, 'w') as feature_file:
