@@ -1,0 +1,7 @@
+# -*- coding: utf-8 -*-
+
+[mysql]
+host   = XXXX
+db     = XXXX
+user   = XXXX
+passwd = XXXX

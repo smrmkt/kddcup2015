@@ -4,6 +4,12 @@
 ## data directory
 */data/
 
+# python
+## pyc file
+**.pyc
+## conf
+python/settings.conf
+
 # R
 ## History files
 */.Rhistory
@@ -13,9 +19,5 @@
 ## RStudio files
 */.Rproj.user/
 */.RData
-
-# python
-## pyc file
-**.pyc
 
 .Rproj.user

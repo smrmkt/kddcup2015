@@ -1,13 +1,26 @@
 #!/usr/bin/env python
 #-*-coding:utf-8-*-
 
+import ConfigParser
 from collections import Counter
+import MySQLdb
+import os
 
 from feature_bag import FeatureBag
 
 
+base_dir = os.path.dirname(__file__)
+
 class EnrollmentFeatureBag(FeatureBag):
     def __init__(self, enrollment_id, logs, feature_keys, feature_values):
+        conf = ConfigParser.SafeConfigParser()
+        conf.read('{0}/../settings.conf'.format(base_dir))
+        self._con = MySQLdb.connect(
+            host=conf.get('mysql', 'host'),
+            db=conf.get('mysql', 'db'),
+            user=conf.get('mysql', 'user'),
+            passwd=conf.get('mysql', 'passwd'),
+        )
         FeatureBag.__init__(self, enrollment_id, logs, feature_keys, feature_values)
 
     def extract_access_count(self):
