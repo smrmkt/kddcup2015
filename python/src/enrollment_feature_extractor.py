@@ -14,7 +14,7 @@ base_dir = os.path.dirname(__file__)
 class EnrollmentFeatureExtractor(FeatureExtractor):
     def __init__(self, data_type, mode):
         log_csv_path = '{0}/../data/{1}/log_{1}.csv'.format(base_dir, data_type)
-        feature_path = '{0}/../data/feature/feature_{1}.csv'.format(base_dir, data_type)
+        feature_path = '{0}/../data/feature/enrollment_feature_{1}.csv'.format(base_dir, data_type)
         FeatureExtractor.__init__(self, mode, log_csv_path, feature_path)
 
     def extract(self):
