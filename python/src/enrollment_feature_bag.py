@@ -6,13 +6,12 @@ from collections import Counter
 from feature_bag import FeatureBag
 
 
-class AccessFeatureBag(FeatureBag):
+class EnrollmentFeatureBag():
     def __init__(self, enrollment_id, logs, feature_keys=list(), feature_values=list()):
-        FeatureBag.__init__(self,
-                            enrollment_id,
-                            logs,
-                            feature_keys=feature_keys,
-                            feature_values=feature_values)
+        self.enrollment_id = enrollment_id
+        self.feature_keys = feature_keys
+        self.feature_values = feature_values
+        self.logs = logs
 
     def extract_access_count(self):
         self.feature_keys.append('access_count')

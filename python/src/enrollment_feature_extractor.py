@@ -5,22 +5,26 @@ import datetime
 import itertools
 import os.path
 
-from access_feature_bag import AccessFeatureBag
+from enrollment_feature_bag import EnrollmentFeatureBag
 
 base_dir = os.path.dirname(__file__)
 
 
-class AccessFeatureExtractor():
-    def __init__(self, data_type):
+class EnrollmentFeatureExtractor():
+
+    _DEBUG_LIMIT = 1000
+
+    def __init__(self, data_type, mode):
         self._log_csv_path = '{0}/../data/{1}/log_{1}.csv'.format(base_dir, data_type)
         self._feature_path = '{0}/../data/feature/feature_{1}.csv'.format(base_dir, data_type)
         self._log_csv = open(self._log_csv_path, 'r')
-        tuple_iter = self._tuple_generator(self._log_csv)
+        mode_iter = self._mode_filter(self._log_csv, mode)
+        tuple_iter = self._tuple_generator(mode_iter)
         grouped_iter = itertools.groupby(tuple_iter, lambda x: x[0])
         self._bag_iter = self._bag_generator(grouped_iter)
 
     def extract(self):
-        access_iter = self.extract_access_features(self._bag_iter)
+        access_iter = self.extract_enrollment_features(self._bag_iter)
         self._save_to_file(access_iter)
         self._log_csv.close()
 
@@ -38,13 +42,19 @@ class AccessFeatureExtractor():
                     ','.join([str(v)for v in bag.feature_values])
                 ))
 
-    def extract_access_features(self, iter):
+    def extract_enrollment_features(self, iter):
         for bag in iter:
             yield bag.extract_access_count()\
                 .extract_access_days()\
                 .extract_access_hours()\
                 .extract_source_count()\
                 .extract_event_count()
+
+    def _mode_filter(self, iter, mode):
+        for cnt, line in enumerate(iter):
+            if mode == 'debug' and cnt > self._DEBUG_LIMIT:
+                break
+            yield line
 
     def _tuple_generator(self, iter):
         for line in iter:
@@ -54,7 +64,7 @@ class AccessFeatureExtractor():
 
     def _bag_generator(self, iter):
         for k, g in iter:
-            yield AccessFeatureBag(k, [t[1] for t in g], [], [])
+            yield EnrollmentFeatureBag(k, [t[1] for t in g], [], [])
 
     def _parse_line(self, line):
         items = line.rstrip().split(',')
