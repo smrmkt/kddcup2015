@@ -14,8 +14,9 @@ from enrollment_feature_extractor import EnrollmentFeatureExtractor
 
 # args
 parser = argparse.ArgumentParser()
-parser.add_argument('data_type', type=str, choices=['train', 'test'])
-parser.add_argument('mode', type=str, nargs='?', default='debug', choices=['debug', 'normal'])
+parser.add_argument('target', type=str, choices=['enrollment', 'user'], default='enrollment')
+parser.add_argument('data_type', type=str, choices=['train', 'test'], default='train')
+parser.add_argument('mode', type=str, choices=['debug', 'normal'], nargs='?', default='debug')
 
 
 if __name__ == '__main__':
