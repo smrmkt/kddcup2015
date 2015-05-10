@@ -10,9 +10,9 @@ setnames(truth_train, colnames(truth_train), c('enrollment_id', 'dropout'))
 data_train = merge(truth_train, feature_train, by='enrollment_id')
 
 # randomforest model
-fit.rf = pforeach(ntree=rep(250, .cores), .c=combine)({
-  randomForest(dropout~., data=data_train, ntree=ntree)
-})
+t = proc.time()
+fit.rf = randomForest(dropout~., data=data_train, ntree=300)
+proc.time()-t
 
 # predict test data
 predict.rf = predict(fit.rf, feature_test)
