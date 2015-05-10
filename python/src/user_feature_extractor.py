@@ -41,7 +41,8 @@ class UserFeatureExtractor(FeatureExtractor):
 
     def _extract_user_features(self, iter):
         for bag in iter:
-            yield bag.extract_course_count()
+            yield bag.extract_course_count()\
+                .extract_course_access_percentage()
 
     def _tuple_generator(self, iter):
         for line in iter:

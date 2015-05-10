@@ -28,3 +28,10 @@ class UserFeatureBag():
         for k, v in self.feature_values_group.items():
             v.append(len(self.logs_group))
         return self
+
+    def extract_course_access_percentage(self):
+        self.feature_keys.append('course_access_percentage')
+        access_count = sum([len(v) for k, v in self.logs_group.items()])
+        for k, v in self.logs_group.items():
+            self.feature_values_group[k].append(float(len(v))/access_count)
+        return self
