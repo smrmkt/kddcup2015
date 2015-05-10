@@ -11,10 +11,10 @@ base_dir = os.path.dirname(__file__)
 
 
 class UserFeatureExtractor(FeatureExtractor):
-    def __init__(self, data_type, mode):
+    def __init__(self, data_type, mode, debug_limit):
         log_csv_path = '{0}/../data/{1}/log_{1}.csv'.format(base_dir, data_type)
         feature_path = '{0}/../data/feature/user_feature_{1}.csv'.format(base_dir, data_type)
-        FeatureExtractor.__init__(self, mode, log_csv_path, feature_path)
+        FeatureExtractor.__init__(self, mode, log_csv_path, feature_path, debug_limit)
 
     def extract(self):
         tuple_iter = self._tuple_generator(self._filtered_iter)

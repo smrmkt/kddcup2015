@@ -12,9 +12,8 @@ base_dir = os.path.dirname(__file__)
 
 class FeatureExtractor():
 
-    _DEBUG_LIMIT = 1000
-
-    def __init__(self, mode, log_csv_path, feature_path):
+    def __init__(self, mode, log_csv_path, feature_path, debug_limit):
+        self._debug_limit = debug_limit
         self._log_csv_path = log_csv_path
         self._feature_path = feature_path
         self._log_csv = open(self._log_csv_path, 'r')
@@ -29,7 +28,7 @@ class FeatureExtractor():
     def _mode_filter(self, iter, mode):
         for cnt, line in enumerate(iter):
             # mode check
-            if mode == 'debug' and cnt > self._DEBUG_LIMIT:
+            if mode == 'debug' and cnt > self._debug_limit:
                 break
             # remove invalid data (includes header)
             enrollment_id = (line.split(','))[0]
