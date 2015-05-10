@@ -1,26 +1,34 @@
 require('data.table')
 
 # load data
-feature_train = fread('./data/feature_train.csv')
-feature_test = fread('./data/feature_test.csv')
-truth_train = fread('./data/truth_train.csv')
-setnames(truth_train, colnames(truth_train), c('enrollment_id', 'dropout'))
-data_train = merge(truth_train, feature_train, by='enrollment_id')
+## train data
+train.feature.enrollment = fread('./data/feature/enrollment_feature_train.csv')
+train.feature.user = fread('./data/feature/user_feature_train.csv')
+train.feature = merge(train.feature.enrollment,
+                      train.feature.user, by='enrollment_id')
+train.truth = fread('./data/feature/truth_train.csv')
+setnames(train.truth, colnames(train.truth), c('enrollment_id', 'dropout'))
+train.dataset = merge(train.truth, train.feature, by='enrollment_id')
+train.dataset$enrollment_id = NULL
+## test data
+test.feature.enrollment = fread('./data/feature/enrollment_feature_test.csv')
+test.feature.user = fread('./data/feature/user_feature_test.csv')
+test.feature = merge(test.feature.enrollment,
+                     test.feature.user, by='enrollment_id')
 
-# randomforest model
+# model
 t = proc.time()
-fit.glm = glm(dropout~.,data=data_train, family=binomial)
+train.fit = glm(dropout~.,data=train.dataset, family=binomial)
 proc.time()-t
 
 # predict test data
-predict.glm = predict(fit.glm, feature_test)
-predict.glm.b = as.numeric(predict.glm > 0.5)
-predict.glm.out = as.data.frame(
-  cbind(feature_test$enrollment_id, predict.glm.b))
-setnames(predict.glm.out, colnames(predict.glm.out), c('enrollment_id', 'dropout'))
-write.table(predict.glm.out,
-            "./data/predict.glm.out.csv", 
+test.predict = predict(train.fit, test.feature)
+test.predict.b = as.numeric(test.predict > 0.5)
+test.predict.out = as.data.frame(
+  cbind(test.feature$enrollment_id, test.predict.b))
+setnames(test.predict.out,
+         colnames(test.predict.out), c('enrollment_id', 'dropout'))
+write.table(test.predict.out,
+            "./data/predict/predict.glm.csv", 
             sep=',', col.names=F, row.names=F, quote=F)
-
-
 
