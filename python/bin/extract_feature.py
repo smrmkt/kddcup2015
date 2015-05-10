@@ -17,7 +17,7 @@ from user_feature_extractor import UserFeatureExtractor
 parser = argparse.ArgumentParser()
 parser.add_argument('target', type=str, choices=['enrollment', 'user'], default='enrollment')
 parser.add_argument('data_type', type=str, choices=['train', 'test'], default='train')
-parser.add_argument('mode', type=str, choices=['debug', 'normal'], nargs='?', default='debug')
+parser.add_argument('mode', type=str, choices=['debug', 'normal'], nargs='?', default='normal')
 parser.add_argument('debug_limit', type=int, nargs='?', default=1000)
 
 

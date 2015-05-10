@@ -1,8 +1,16 @@
+# args
+mode=''
+debug_limit=''
+if [ $# == 2 ]; then
+    mode=$1
+    debug_limit=$2
+fi
+
 # feature extraction
-python python/bin/extract_feature.py user train
-python python/bin/extract_feature.py user test
-python python/bin/extract_feature.py enrollment train
-python python/bin/extract_feature.py enrollment test
+python python/bin/extract_feature.py user train $mode $debug_limit
+python python/bin/extract_feature.py user test $mode $debug_limit
+python python/bin/extract_feature.py enrollment train $mode $debug_limit
+python python/bin/extract_feature.py enrollment test $mode $debug_limit
 
 # data transfer
 cp python/data/feature/* r/data/feature/
