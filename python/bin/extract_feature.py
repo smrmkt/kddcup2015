@@ -11,6 +11,7 @@ script_path = script_path if len(script_path) else '.'
 sys.path.append(script_path + '/../src')
 
 from enrollment_feature_extractor import EnrollmentFeatureExtractor
+from user_feature_extractor import UserFeatureExtractor
 
 # args
 parser = argparse.ArgumentParser()
@@ -20,7 +21,12 @@ parser.add_argument('mode', type=str, choices=['debug', 'normal'], nargs='?', de
 
 
 if __name__ == '__main__':
+    target = parser.parse_args().target
     data_type = parser.parse_args().data_type
     mode = parser.parse_args().mode
-    extractor = EnrollmentFeatureExtractor(data_type, mode)
+    extractor = None
+    if target == 'enrollment':
+        extractor = EnrollmentFeatureExtractor(data_type, mode)
+    elif target == 'user':
+        extractor = UserFeatureExtractor(data_type, mode)
     extractor.extract()

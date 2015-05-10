@@ -28,9 +28,13 @@ class FeatureExtractor():
 
     def _mode_filter(self, iter, mode):
         for cnt, line in enumerate(iter):
+            # mode check
             if mode == 'debug' and cnt > self._DEBUG_LIMIT:
                 break
-            yield line
+            # remove invalid data (includes header)
+            enrollment_id = (line.split(','))[0]
+            if str.isdigit(enrollment_id):
+                yield line
 
     def _parse_line(self, line):
         items = line.rstrip().split(',')
