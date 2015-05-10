@@ -33,11 +33,10 @@ class UserFeatureExtractor(FeatureExtractor):
                         ','.join(bag.feature_keys)
                     ))
                     header_written = True
-                enrollment_ids = set([log['enrollment_id'] for log in bag.logs])
-                for enrollment_id in enrollment_ids:
+                for enrollment_id, feature_values in bag.feature_values_group.items():
                     feature_file.write('{0},{1}\n'.format(
                         str(enrollment_id),
-                        ','.join([str(v)for v in bag.feature_values])
+                        ','.join([str(v) for v in feature_values])
                     ))
 
     def _extract_user_features(self, iter):
@@ -51,4 +50,4 @@ class UserFeatureExtractor(FeatureExtractor):
 
     def _bag_generator(self, iter):
         for k, g in iter:
-            yield UserFeatureBag(k, [t[1] for t in g], [], [])
+            yield UserFeatureBag(k, [t[1] for t in g])
