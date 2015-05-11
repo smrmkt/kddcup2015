@@ -17,6 +17,11 @@ test.feature.user = fread('./data/feature/user_feature_test.csv')
 test.feature = merge(test.feature.enrollment,
                      test.feature.user, by='enrollment_id')
 
+# grid search
+#train.feature.noid = train.feature
+#train.feature.noid$enrollment_id = NULL
+#train.tune = tuneRF(train.feature.noid, train.truth$dropout, doBest=T)
+
 # model
 t = proc.time()
 train.fit = randomForest(dropout~., data=train.dataset, ntree=300)
