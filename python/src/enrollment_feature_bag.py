@@ -23,6 +23,9 @@ class EnrollmentFeatureBag(FeatureBag):
         )
         FeatureBag.__init__(self, enrollment_id, logs, feature_keys, feature_values)
 
+    def __del__(self):
+        self._con.close()
+
     def extract_access_count(self):
         self.feature_keys.append('access_count')
         self.feature_values.append(len(self.logs))
@@ -32,6 +35,13 @@ class EnrollmentFeatureBag(FeatureBag):
         access_dates = set([log['time'].strftime('%Y%m%d') for log in self.logs])
         self.feature_keys.append('access_days')
         self.feature_values.append(len(access_dates))
+        return self
+
+    def extract_access_term(self):
+        access_dates = set([log['time'] for log in self.logs])
+        term = (max(access_dates)-min(access_dates)).days
+        self.feature_keys.append('access_term')
+        self.feature_values.append(term)
         return self
 
     def extract_access_hours(self):
@@ -48,7 +58,7 @@ class EnrollmentFeatureBag(FeatureBag):
 
     def extract_source_count(self):
         sources = [log['source'] for log in self.logs]
-        server_cnt = len([source for source in sources if source == "server"])
+        server_cnt = len([source for source in sources if source == 'server'])
         browser_cnt = len(sources) - server_cnt
         self.feature_keys.append('source_server_count')
         self.feature_values.append(server_cnt)
@@ -65,4 +75,27 @@ class EnrollmentFeatureBag(FeatureBag):
                 cnt = counter[event]
             self.feature_keys.append('event_{0}'.format(event))
             self.feature_values.append(cnt)
+        return self
+
+    def extract_courses(self):
+        course_id = self.logs[0]['course_id']
+        cursor = self._con.cursor()
+        cursor.execute('SELECT rank FROM course WHERE course_id="{0}"'.format(course_id))
+        rank = cursor.fetchone()[0]
+        cursor.close()
+        for i in range(1, 40):
+            self.feature_keys.append('course_rank_{0:02d}'.format(i))
+            if rank == i:
+                self.feature_values.append(1)
+            else:
+                self.feature_values.append(0)
+        return self
+
+    def extract_course_audience(self):
+        course_id = self.logs[0]['course_id']
+        cursor = self._con.cursor()
+        cursor.execute('SELECT audience FROM course WHERE course_id="{0}"'.format(course_id))
+        self.feature_keys.append('course_audience')
+        self.feature_values.append(cursor.fetchone()[0])
+        cursor.close()
         return self

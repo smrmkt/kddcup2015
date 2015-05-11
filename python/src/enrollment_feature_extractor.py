@@ -29,8 +29,11 @@ class EnrollmentFeatureExtractor(FeatureExtractor):
             yield bag.extract_access_count()\
                 .extract_access_days()\
                 .extract_access_hours()\
+                .extract_access_term()\
                 .extract_source_count()\
-                .extract_event_count()
+                .extract_event_count()\
+                .extract_courses()\
+                .extract_course_audience()
 
     def _save_to_file(self, iter):
         with open(self._feature_path, 'w') as feature_file:
