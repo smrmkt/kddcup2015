@@ -28,10 +28,23 @@ class EnrollmentFeatureExtractor(FeatureExtractor):
         for bag in iter:
             yield bag.extract_access_count()\
                 .extract_access_days()\
-                .extract_access_hours()\
+                .extract_access_interval_min()\
+                .extract_access_interval_max()\
+                .extract_access_interval_mean()\
+                .extract_access_interval_var()\
                 .extract_access_term()\
+                .extract_access_hour_count()\
+                .extract_access_hour_mean()\
+                .extract_access_hour_var()\
+                .extract_access_weekend_count()\
+                .extract_access_weekend_percentage()\
+                .extract_staytime_min()\
+                .extract_staytime_max()\
+                .extract_staytime_mean()\
+                .extract_staytime_var()\
                 .extract_source_count()\
                 .extract_event_count()\
+                .extract_event_percentage()\
                 .extract_courses()\
                 .extract_course_audience()
 

@@ -3,7 +3,9 @@
 
 import ConfigParser
 from collections import Counter
+import datetime
 import MySQLdb
+import numpy as np
 import os
 
 from feature_bag import FeatureBag
@@ -37,6 +39,50 @@ class EnrollmentFeatureBag(FeatureBag):
         self.feature_values.append(len(access_dates))
         return self
 
+    def extract_access_interval_min(self):
+        access_dates = sorted(list(set([log['time'].strftime('%Y%m%d') for log in self.logs])))
+        access_dates = [datetime.datetime.strptime(d, '%Y%m%d') for d in access_dates]
+        if len(access_dates) == 1:
+            access_intervals = [0]
+        else:
+            access_intervals = [(access_dates[i+1]-access_dates[i]).days for i in range(len(access_dates)-1)]
+        self.feature_keys.append('access_interval_min')
+        self.feature_values.append(min(access_intervals))
+        return self
+
+    def extract_access_interval_max(self):
+        access_dates = sorted(list(set([log['time'].strftime('%Y%m%d') for log in self.logs])))
+        access_dates = [datetime.datetime.strptime(d, '%Y%m%d') for d in access_dates]
+        if len(access_dates) == 1:
+            access_intervals = [0]
+        else:
+            access_intervals = [(access_dates[i+1]-access_dates[i]).days for i in range(len(access_dates)-1)]
+        self.feature_keys.append('access_interval_max')
+        self.feature_values.append(max(access_intervals))
+        return self
+
+    def extract_access_interval_mean(self):
+        access_dates = sorted(list(set([log['time'].strftime('%Y%m%d') for log in self.logs])))
+        access_dates = [datetime.datetime.strptime(d, '%Y%m%d') for d in access_dates]
+        if len(access_dates) == 1:
+            access_intervals = [0]
+        else:
+            access_intervals = [(access_dates[i+1]-access_dates[i]).days for i in range(len(access_dates)-1)]
+        self.feature_keys.append('access_interval_mean')
+        self.feature_values.append(np.mean(access_intervals))
+        return self
+
+    def extract_access_interval_var(self):
+        access_dates = sorted(list(set([log['time'].strftime('%Y%m%d') for log in self.logs])))
+        access_dates = [datetime.datetime.strptime(d, '%Y%m%d') for d in access_dates]
+        if len(access_dates) == 1:
+            access_intervals = [0]
+        else:
+            access_intervals = [(access_dates[i+1]-access_dates[i]).days for i in range(len(access_dates)-1)]
+        self.feature_keys.append('access_interval_var')
+        self.feature_values.append(np.var(access_intervals))
+        return self
+
     def extract_access_term(self):
         access_dates = set([log['time'] for log in self.logs])
         term = (max(access_dates)-min(access_dates)).days
@@ -45,7 +91,7 @@ class EnrollmentFeatureBag(FeatureBag):
         return self
 
     def extract_access_hours(self):
-        access_hours = [log['time'].strftime('%H') for log in self.logs]
+        access_hours = sorted([log['time'].strftime('%H') for log in self.logs])
         counter = Counter(access_hours)
         for i in range(24):
             hour = '{0:02d}'.format(i)
@@ -56,25 +102,116 @@ class EnrollmentFeatureBag(FeatureBag):
             self.feature_values.append(cnt)
         return self
 
+    def extract_access_hour_count(self):
+        access_hours = set([log['time'].strftime('%H') for log in self.logs])
+        self.feature_keys.append('access_hour_count')
+        self.feature_values.append(len(access_hours))
+        return self
+
+    def extract_access_hour_mean(self):
+        access_hours = [int(log['time'].strftime('%H')) for log in self.logs]
+        self.feature_keys.append('access_hour_mean')
+        self.feature_values.append(np.var(access_hours))
+        return self
+
+    def extract_access_hour_var(self):
+        access_hours = [int(log['time'].strftime('%H')) for log in self.logs]
+        self.feature_keys.append('access_hour_var')
+        self.feature_values.append(np.var(access_hours))
+        return self
+
+    def extract_access_weekend_count(self):
+        dows = [log['time'].weekday() for log in self.logs]
+        self.feature_keys.append('access_weekend_count')
+        self.feature_values.append(len([1 for d in dows if d > 5]))
+        return self
+
+    def extract_access_weekend_percentage(self):
+        dows = [log['time'].weekday() for log in self.logs]
+        self.feature_keys.append('access_weekend_percentage')
+        self.feature_values.append(float(len([1 for d in dows if d > 5]))/len(dows))
+        return self
+
+    def extract_staytime_min(self):
+        access_dates = [(log['time'].strftime('%Y%m%d'), log['time']) for log in self.logs]
+        daily_logs = {}
+        for d in access_dates:
+            if d[0] in daily_logs.keys():
+                daily_logs.get(d[0]).append(d[1])
+            else:
+                daily_logs[d[0]] = [d[1]]
+        staytimes = [(max(v)-min(v)).seconds for k, v in daily_logs.items()]
+        self.feature_keys.append('staytime_min')
+        self.feature_values.append(min(staytimes))
+        return self
+
+    def extract_staytime_max(self):
+        access_dates = [(log['time'].strftime('%Y%m%d'), log['time']) for log in self.logs]
+        daily_logs = {}
+        for d in access_dates:
+            if d[0] in daily_logs.keys():
+                daily_logs.get(d[0]).append(d[1])
+            else:
+                daily_logs[d[0]] = [d[1]]
+        staytimes = [(max(v)-min(v)).seconds for k, v in daily_logs.items()]
+        self.feature_keys.append('staytime_max')
+        self.feature_values.append(max(staytimes))
+        return self
+
+    def extract_staytime_mean(self):
+        access_dates = [(log['time'].strftime('%Y%m%d'), log['time']) for log in self.logs]
+        daily_logs = {}
+        for d in access_dates:
+            if d[0] in daily_logs.keys():
+                daily_logs.get(d[0]).append(d[1])
+            else:
+                daily_logs[d[0]] = [d[1]]
+        staytimes = [(max(v)-min(v)).seconds for k, v in daily_logs.items()]
+        self.feature_keys.append('staytime_mean')
+        self.feature_values.append(np.mean(staytimes))
+        return self
+
+    def extract_staytime_var(self):
+        access_dates = [(log['time'].strftime('%Y%m%d'), log['time']) for log in self.logs]
+        daily_logs = {}
+        for d in access_dates:
+            if d[0] in daily_logs.keys():
+                daily_logs.get(d[0]).append(d[1])
+            else:
+                daily_logs[d[0]] = [d[1]]
+        staytimes = [(max(v)-min(v)).seconds for k, v in daily_logs.items()]
+        self.feature_keys.append('staytime_var')
+        self.feature_values.append(np.var(staytimes))
+        return self
+
     def extract_source_count(self):
         sources = [log['source'] for log in self.logs]
         server_cnt = len([source for source in sources if source == 'server'])
         browser_cnt = len(sources) - server_cnt
         self.feature_keys.append('source_server_count')
         self.feature_values.append(server_cnt)
-        self.feature_keys.append('source_browser_count')
-        self.feature_values.append(browser_cnt)
         return self
 
     def extract_event_count(self):
-        events = [log['event'] for log in self.logs]
+        events = sorted([log['event'] for log in self.logs])
         counter = Counter(events)
         for event in ['problem', 'video', 'access', 'wiki', 'discussion', 'navigate', 'page_close']:
             cnt = 0
             if event in counter:
                 cnt = counter[event]
-            self.feature_keys.append('event_{0}'.format(event))
+            self.feature_keys.append('event_{0}_count'.format(event))
             self.feature_values.append(cnt)
+        return self
+
+    def extract_event_percentage(self):
+        events = sorted([log['event'] for log in self.logs])
+        counter = Counter(events)
+        for event in ['problem', 'video', 'access', 'wiki', 'discussion', 'navigate', 'page_close']:
+            cnt = 0
+            if event in counter:
+                cnt = counter[event]
+            self.feature_keys.append('event_{0}_percentage'.format(event))
+            self.feature_values.append(float(cnt)/len(events))
         return self
 
     def extract_courses(self):
