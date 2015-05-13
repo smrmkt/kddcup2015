@@ -8,7 +8,7 @@ train.feature = merge(train.feature.enrollment,
                       train.feature.user, by='enrollment_id')
 train.truth = fread('./data/feature/truth_train.csv')
 setnames(train.truth, colnames(train.truth), c('enrollment_id', 'dropout'))
-train.dataset = merge(train.truth, train.feature, by='enrollment_id')
+train.dataset = merge(train.feature, train.truth, by='enrollment_id')
 train.dataset$enrollment_id = NULL
 ## test data
 test.feature.enrollment = fread('./data/feature/enrollment_feature_test.csv')
@@ -18,7 +18,9 @@ test.feature = merge(test.feature.enrollment,
 
 # model
 t = proc.time()
-train.fit = glm(dropout~.,data=train.dataset, family=binomial)
+train.weights = ifelse(train.dataset$dropout==0, 3.829214, 1)
+train.fit = glm(dropout~., data=train.dataset,
+                family=binomial, weights=train.weights)
 proc.time()-t
 
 # predict test data
