@@ -24,10 +24,9 @@ train.fit = glm(dropout~., data=train.dataset,
 proc.time()-t
 
 # predict test data
-test.predict = predict(train.fit, test.feature)
-test.predict.b = as.numeric(test.predict > 0.5)
+test.predict = predict(train.fit, test.feature, type='response')
 test.predict.out = as.data.frame(
-  cbind(test.feature$enrollment_id, test.predict.b))
+  cbind(test.feature$enrollment_id, test.predict))
 setnames(test.predict.out,
          colnames(test.predict.out), c('enrollment_id', 'dropout'))
 write.table(test.predict.out,
