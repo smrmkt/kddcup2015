@@ -7,6 +7,7 @@ train.feature.user = fread('./data/feature/user_feature_train.csv')
 train.feature = merge(train.feature.enrollment,
                       train.feature.user, by='enrollment_id')
 train.truth = fread('./data/feature/truth_train.csv')
+train.truth = train.truth[1:nrow(train.feature),]
 setnames(train.truth, colnames(train.truth), c('enrollment_id', 'dropout'))
 train.dataset = merge(train.feature, train.truth, by='enrollment_id')
 train.dataset$enrollment_id = NULL
@@ -18,18 +19,20 @@ test.feature = merge(test.feature.enrollment,
 
 # model
 t = proc.time()
-train.weights = ifelse(train.dataset$dropout==0, 3.829214, 1)
+sumpos = sum(train.dataset$dropout==1.0)
+sumneg = sum(train.dataset$dropout==0.0)
+ratio = sumpos/sumneg
+train.weights = ifelse(train.dataset$dropout==0, ratio, 1)
 train.fit = glm(dropout~., data=train.dataset,
                 family=binomial, weights=train.weights)
 proc.time()-t
 
 # predict test data
-test.predict = predict(train.fit, test.feature)
-test.predict.b = as.numeric(test.predict > 0.5)
-test.predict.out = as.data.frame(
-  cbind(test.feature$enrollment_id, test.predict.b))
+test.predict = predict(train.fit, test.feature, type='response')
+test.predict.out = as.data.frame(cbind(test.feature$enrollment_id, test.predict))
 setnames(test.predict.out,
-         colnames(test.predict.out), c('enrollment_id', 'dropout'))
+         colnames(test.predict.out),
+         c('enrollment_id', 'dropout'))
 write.table(test.predict.out,
             "./data/predict/predict.glm.csv", 
             sep=',', col.names=F, row.names=F, quote=F)
