@@ -39,6 +39,19 @@ class EnrollmentFeatureBag(FeatureBag):
         self.feature_values.append(len(access_dates))
         return self
 
+    def extract_access_days_per_week(self):
+        access_dates = set([log['time'].strftime('%Y%m%d') for log in self.logs])
+        access_dates = [datetime.datetime.strptime(d, '%Y%m%d') for d in access_dates]
+        weeks = [0 for i in range(82/7+1)]
+        start_date = datetime.datetime(2014, 5, 13)
+        for access_date in access_dates:
+            diff = (access_date-start_date).days/7
+            weeks[diff] += 1
+        for i, week in enumerate(weeks):
+            self.feature_keys.append('access_days_week{0:02d}'.format(i))
+            self.feature_values.append(week)
+        return self
+
     def extract_access_interval_min(self):
         access_dates = sorted(list(set([log['time'].strftime('%Y%m%d') for log in self.logs])))
         access_dates = [datetime.datetime.strptime(d, '%Y%m%d') for d in access_dates]

@@ -32,6 +32,7 @@ class EnrollmentFeatureExtractor(FeatureExtractor):
                 .extract_access_interval_max()\
                 .extract_access_interval_mean()\
                 .extract_access_interval_var()\
+                .extract_access_days_per_week()\
                 .extract_access_term()\
                 .extract_access_hour_count()\
                 .extract_access_hour_mean()\
