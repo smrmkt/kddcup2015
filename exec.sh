@@ -20,3 +20,5 @@ cd r
 #R --vanilla --slave < src/randomforest.R
 #R --vanilla --slave < src/svm.R
 R --vanilla --slave < src/glm.R
+R --vanilla --slave < src/xgboost.R
+
