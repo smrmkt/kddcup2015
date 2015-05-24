@@ -36,8 +36,7 @@ xgmat = xgb.DMatrix(as.matrix(train.feature),
                     label=train.truth$dropout,
                     weight=train.weights,
                     missing=-999.0)
-watchlist = list("train"=xgmat)
-train.fit = xgb.train(param, xgmat, nround) #, watchlist)
+train.fit = xgb.train(param, xgmat, nround)
 
 # predict test data
 test.predict = predict(train.fit, as.matrix(test.feature))
