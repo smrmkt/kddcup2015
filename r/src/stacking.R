@@ -73,6 +73,6 @@ setnames(test.predict.out,
          colnames(test.predict.out),
          c('enrollment_id', 'dropout'))
 write.table(test.predict.out,
-            './data/predict/predict.glm.csv', 
+            './data/predict/predict.stacking.csv', 
             sep=',', col.names=F, row.names=F, quote=F)
 
