@@ -12,6 +12,7 @@ from feature_bag import FeatureBag
 
 
 base_dir = os.path.dirname(__file__)
+events = ['problem', 'video', 'access', 'wiki', 'discussion', 'nagivate', 'page_close']
 
 class EnrollmentFeatureBag(FeatureBag):
     def __init__(self, enrollment_id, logs, feature_keys, feature_values):
@@ -208,7 +209,7 @@ class EnrollmentFeatureBag(FeatureBag):
     def extract_event_count(self):
         events = sorted([log['event'] for log in self.logs])
         counter = Counter(events)
-        for event in ['problem', 'video', 'access', 'wiki', 'discussion', 'navigate', 'page_close']:
+        for event in events:
             cnt = 0
             if event in counter:
                 cnt = counter[event]
@@ -219,12 +220,28 @@ class EnrollmentFeatureBag(FeatureBag):
     def extract_event_percentage(self):
         events = sorted([log['event'] for log in self.logs])
         counter = Counter(events)
-        for event in ['problem', 'video', 'access', 'wiki', 'discussion', 'navigate', 'page_close']:
+        for event in events:
             cnt = 0
             if event in counter:
                 cnt = counter[event]
             self.feature_keys.append('event_{0}_percentage'.format(event))
             self.feature_values.append(float(cnt)/len(events))
+        return self
+
+    def extract_event_count_per_week(self):
+        start_date = datetime.datetime(2014, 5, 13)
+        event_week = {}
+        for event in events:
+            event_week[event] = [0 for i in range(82/7+1)]
+        targets = set(['{0},{1}'.format(log['time'].strftime('%Y%m%d'), log['event']) for log in self.logs])
+        for target in targets:
+            d, e = target.split(',')
+            diff = (datetime.datetime.strptime(d, '%Y%m%d')-start_date).days/7
+            event_week[e][diff] += 1
+        for event, weeks in event_week.items():
+            for i, week in enumerate(weeks):
+                self.feature_keys.append('event_count_{0}_week{1:02d}'.format(event, i))
+                self.feature_values.append(week)
         return self
 
     def extract_courses(self):
