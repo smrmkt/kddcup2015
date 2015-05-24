@@ -18,6 +18,12 @@ test.feature.user = fread('./data/feature/user_feature_test.csv')
 test.feature = merge(test.feature.enrollment,
                      test.feature.user, by='enrollment_id')
 
+# sample weights
+train.sumpos = sum(train.dataset$dropout==1.0)
+train.sumneg = sum(train.dataset$dropout==0.0)
+ratio = train.sumpos/train.sumneg
+train.weights = ifelse(train.dataset$dropout==0, ratio, 1)
+
 # xgboost
 param = list('objective'= 'binary:logistic',
              'scale_pos_weight'=ratio,
@@ -27,7 +33,7 @@ param = list('objective'= 'binary:logistic',
              'silent' = 1,
              'nthread' = 16)
 train.cv = xgb.cv(param=param,
-                  as.matrix(train.feature.stacking),
+                  as.matrix(train.feature),
                   label=train.truth$dropout,
                   nfold=round(1+log2(nrow(train.feature))),
                   nrounds=100)
@@ -37,6 +43,11 @@ xgmat = xgb.DMatrix(as.matrix(train.feature),
                     weight=train.weights,
                     missing=-999.0)
 train.fit = xgb.train(param, xgmat, nround)
+
+# predict train data
+train.predict = predict(train.fit, as.matrix(train.feature))
+train.predict.b = as.numeric(train.predict > 0.5)
+table(train.predict.b, train.truth$dropout)
 
 # predict test data
 test.predict = predict(train.fit, as.matrix(test.feature))
