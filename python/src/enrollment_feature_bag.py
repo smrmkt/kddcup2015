@@ -228,7 +228,7 @@ class EnrollmentFeatureBag(FeatureBag):
             self.feature_values.append(float(cnt)/len(events))
         return self
 
-    def extract_event_count_per_week(self):
+    def extract_event_days_per_week(self):
         start_date = datetime.datetime(2014, 5, 13)
         event_week = {}
         for event in events:
@@ -240,8 +240,23 @@ class EnrollmentFeatureBag(FeatureBag):
             event_week[e][diff] += 1
         for event, weeks in event_week.items():
             for i, week in enumerate(weeks):
-                self.feature_keys.append('event_count_{0}_week{1:02d}'.format(event, i))
+                self.feature_keys.append('event_days_{0}_week{1:02d}'.format(event, i))
                 self.feature_values.append(week)
+        return self
+
+    def extract_video_over10minutes_count_per_week(self):
+        start_date = datetime.datetime(2014, 5, 13)
+        weeks = [0 for i in range(82/7+1)]
+        for i in range(len(self.logs)-1):
+            if self.logs[i]['event'] != 'video':
+                continue
+            time_delta = self.logs[i+1]['time']-self.logs[i]['time']
+            if 600 < time_delta.seconds < 18000 and time_delta.days == 0:
+                diff = (self.logs[i+1]['time']-start_date).days/7
+                weeks[diff] += 1
+        for i, week in enumerate(weeks):
+            self.feature_keys.append('video_over10minutes_week{0:02d}'.format(i))
+            self.feature_values.append(week)
         return self
 
     def extract_courses(self):

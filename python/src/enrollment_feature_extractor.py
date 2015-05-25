@@ -45,8 +45,9 @@ class EnrollmentFeatureExtractor(FeatureExtractor):
                 .extract_staytime_var()\
                 .extract_source_count()\
                 .extract_event_count()\
-                .extract_event_count_per_week()\
+                .extract_event_days_per_week()\
                 .extract_event_percentage()\
+                .extract_video_over10minutes_count_per_week()\
                 .extract_courses()\
                 .extract_course_audience()
 
