@@ -32,11 +32,11 @@ train.weights = ifelse(train.dataset$dropout==0, ratio, 1)
 param = list('objective'= 'binary:logistic',
              'scale_pos_weight'=ratio,
              'bst:eta'=0.1,
-             'bst:max_depth'=6,
-             'bst:min_child_weight'=2,
+             'bst:max_depth'=4,
              'bst:gamma'=0.3,
              'bst:subsumple'=0.5,
-             'bst:lambda'=1,
+             'bst:colsample'=0.5,
+             'bst:alpha'=1,
              'eval_metric'='auc',
              'silent' = 1,
              'nthread' = 16)
@@ -44,7 +44,7 @@ train.cv = xgb.cv(param=param,
                   sparse.model.matrix(dropout~., train.dataset),
                   label=train.truth$dropout,
                   nfold=round(1+log2(nrow(train.feature))),
-                  nrounds=500)
+                  nrounds=200)
 nround = which.max(train.cv$test.auc.mean)
 xgmat = xgb.DMatrix(sparse.model.matrix(dropout~., train.dataset),
                     label=train.truth$dropout,
