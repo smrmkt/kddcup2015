@@ -48,6 +48,7 @@ class EnrollmentFeatureExtractor(FeatureExtractor):
                 .extract_event_days_per_week()\
                 .extract_event_percentage()\
                 .extract_video_over10minutes_count_per_week()\
+                .extract_problem_over3minutes_count_per_week()\
                 .extract_courses()\
                 .extract_course_audience()
 
