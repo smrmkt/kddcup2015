@@ -43,11 +43,12 @@ class EnrollmentFeatureBag(FeatureBag):
     def extract_access_days_per_week(self):
         access_dates = set([log['time'].strftime('%Y%m%d') for log in self.logs])
         access_dates = [datetime.datetime.strptime(d, '%Y%m%d') for d in access_dates]
-        weeks = [0 for i in range(14)]
+        weeks = [0 for i in range(82/7+1)]
         start_date = datetime.datetime(2014, 5, 13)
         for access_date in access_dates:
             diff = (access_date-start_date).days/7
-            weeks[diff] += 1
+            if 0 <= diff < len(weeks):
+                weeks[diff] += 1
         for i, week in enumerate(weeks):
             self.feature_keys.append('access_days_week{0:02d}'.format(i))
             self.feature_values.append(week)
@@ -237,7 +238,8 @@ class EnrollmentFeatureBag(FeatureBag):
         for target in targets:
             d, e = target.split(',')
             diff = (datetime.datetime.strptime(d, '%Y%m%d')-start_date).days/7
-            event_week[e][diff] += 1
+            if 0 <= diff < len(event_week[e]):
+                event_week[e][diff] += 1
         for event, weeks in event_week.items():
             for i, week in enumerate(weeks):
                 self.feature_keys.append('event_days_{0}_week{1:02d}'.format(event, i))
@@ -246,14 +248,15 @@ class EnrollmentFeatureBag(FeatureBag):
 
     def extract_video_over10minutes_count_per_week(self):
         start_date = datetime.datetime(2014, 5, 13)
-        weeks = [0 for i in range(14)]
+        weeks = [0 for i in range(82/7+1)]
         for i in range(len(self.logs)-1):
             if self.logs[i]['event'] != 'video':
                 continue
             time_delta = self.logs[i+1]['time']-self.logs[i]['time']
             if 600 < time_delta.seconds < 18000 and time_delta.days == 0:
                 diff = (self.logs[i+1]['time']-start_date).days/7
-                weeks[diff] += 1
+                if 0 <= diff < len(weeks):
+                    weeks[diff] += 1
         for i, week in enumerate(weeks):
             self.feature_keys.append('video_over10minutes_week{0:02d}'.format(i))
             self.feature_values.append(week)
@@ -261,14 +264,15 @@ class EnrollmentFeatureBag(FeatureBag):
 
     def extract_problem_over3minutes_count_per_week(self):
         start_date = datetime.datetime(2014, 5, 13)
-        weeks = [0 for i in range(14)]
+        weeks = [0 for i in range(82/7+1)]
         for i in range(len(self.logs)-1):
             if self.logs[i]['event'] != 'video':
                 continue
             time_delta = self.logs[i+1]['time']-self.logs[i]['time']
             if 180 < time_delta.seconds < 18000 and time_delta.days == 0:
                 diff = (self.logs[i+1]['time']-start_date).days/7
-                weeks[diff] += 1
+                if 0 <= diff < len(weeks):
+                    weeks[diff] += 1
         for i, week in enumerate(weeks):
             self.feature_keys.append('problem_over3minutes_week{0:02d}'.format(i))
             self.feature_values.append(week)
