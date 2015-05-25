@@ -43,7 +43,7 @@ class EnrollmentFeatureBag(FeatureBag):
     def extract_access_days_per_week(self):
         access_dates = set([log['time'].strftime('%Y%m%d') for log in self.logs])
         access_dates = [datetime.datetime.strptime(d, '%Y%m%d') for d in access_dates]
-        weeks = [0 for i in range(82/7+1)]
+        weeks = [0 for i in range(14)]
         start_date = datetime.datetime(2014, 5, 13)
         for access_date in access_dates:
             diff = (access_date-start_date).days/7
@@ -246,7 +246,7 @@ class EnrollmentFeatureBag(FeatureBag):
 
     def extract_video_over10minutes_count_per_week(self):
         start_date = datetime.datetime(2014, 5, 13)
-        weeks = [0 for i in range(82/7+1)]
+        weeks = [0 for i in range(14)]
         for i in range(len(self.logs)-1):
             if self.logs[i]['event'] != 'video':
                 continue
@@ -261,7 +261,7 @@ class EnrollmentFeatureBag(FeatureBag):
 
     def extract_problem_over3minutes_count_per_week(self):
         start_date = datetime.datetime(2014, 5, 13)
-        weeks = [0 for i in range(82/7+1)]
+        weeks = [0 for i in range(14)]
         for i in range(len(self.logs)-1):
             if self.logs[i]['event'] != 'video':
                 continue
