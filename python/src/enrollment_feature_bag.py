@@ -12,7 +12,7 @@ from feature_bag import FeatureBag
 
 
 base_dir = os.path.dirname(__file__)
-events = ['problem', 'video', 'access', 'wiki', 'discussion', 'nagivate', 'page_close']
+event_types = ['problem', 'video', 'access', 'wiki', 'discussion', 'nagivate', 'page_close']
 
 class EnrollmentFeatureBag(FeatureBag):
     def __init__(self, enrollment_id, logs, feature_keys, feature_values):
@@ -209,30 +209,30 @@ class EnrollmentFeatureBag(FeatureBag):
     def extract_event_count(self):
         events = sorted([log['event'] for log in self.logs])
         counter = Counter(events)
-        for event in events:
+        for event_type in event_types:
             cnt = 0
-            if event in counter:
-                cnt = counter[event]
-            self.feature_keys.append('event_{0}_count'.format(event))
+            if event_type in counter:
+                cnt = counter[event_type]
+            self.feature_keys.append('event_{0}_count'.format(event_type))
             self.feature_values.append(cnt)
         return self
 
     def extract_event_percentage(self):
         events = sorted([log['event'] for log in self.logs])
         counter = Counter(events)
-        for event in events:
+        for event_type in event_types:
             cnt = 0
-            if event in counter:
-                cnt = counter[event]
-            self.feature_keys.append('event_{0}_percentage'.format(event))
+            if event_type in counter:
+                cnt = counter[event_type]
+            self.feature_keys.append('event_{0}_percentage'.format(event_type))
             self.feature_values.append(float(cnt)/len(events))
         return self
 
     def extract_event_days_per_week(self):
         start_date = datetime.datetime(2014, 5, 13)
         event_week = {}
-        for event in events:
-            event_week[event] = [0 for i in range(82/7+1)]
+        for event_type in event_types:
+            event_week[event_type] = [0 for i in range(82/7+1)]
         targets = set(['{0},{1}'.format(log['time'].strftime('%Y%m%d'), log['event']) for log in self.logs])
         for target in targets:
             d, e = target.split(',')
