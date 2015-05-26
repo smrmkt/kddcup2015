@@ -69,7 +69,7 @@ train.cv = xgb.cv(param=param,
                   as.matrix(train.feature.stacking),
                   label=train.truth$dropout,
                   nfold=round(1+log2(nrow(train.feature.stacking))),
-                  nrounds=200)
+                  nrounds=500)
 nround = which.max(train.cv$test.auc.mean)
 xgmat = xgb.DMatrix(as.matrix(train.feature.stacking),
                     label=train.truth$dropout,
@@ -94,5 +94,5 @@ setnames(test.predict.out,
          colnames(test.predict.out),
          c('enrollment_id', 'dropout'))
 write.table(test.predict.out,
-            './data/predict/predict.stacking.csv',
+            './data/predict/predict.feature_selection.csv',
             sep=',', col.names=F, row.names=F, quote=F)
